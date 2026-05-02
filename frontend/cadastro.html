@@ -1,23 +1,98 @@
 <link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-  #msg {
-    margin-top: 10px;
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #121212;
+  color: #fff;
+}
+
+/* CONTAINER MOBILE FIRST */
+.container {
+  width: 100%;
+  min-height: 100dvh;
+  background: #1e1e1e;
+  padding: 25px 18px;
+  box-sizing: border-box;
+}
+
+/* TITULO */
+h2 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* LABEL */
+label {
+  font-size: 13px;
+  margin-top: 12px;
+  display: block;
+  opacity: 0.8;
+}
+
+/* INPUTS GRANDES (TOQUE) */
+input, select {
+  width: 100%;
+  padding: 16px;
+  margin-top: 6px;
+  border-radius: 14px;
+  border: none;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 16px;
+}
+
+/* BOTÃO GRANDE */
+button {
+  width: 100%;
+  padding: 18px;
+  margin-top: 25px;
+  border-radius: 16px;
+  border: none;
+  background: #FFD600;
+  font-weight: bold;
+  font-size: 17px;
+}
+
+/* MSG */
+#msg {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
+
+  .container {
+    max-width: 420px;
+    min-height: auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  }
+}
 </style>
 
 <div class="container">
-  <h2>Criar Conta</h2>
+  <h2>🚀 Criar Conta</h2>
 
-  <label for="nome">Nome</label>
+  <label>Nome</label>
   <input id="nome" placeholder="Seu nome completo">
 
-  <label for="email">Email</label>
+  <label>Email</label>
   <input id="email" type="email" placeholder="Seu email">
 
-  <label for="senha">Senha</label>
+  <label>Senha</label>
   <input id="senha" type="password" placeholder="Crie uma senha">
 
-  <label for="tipo">Tipo de conta</label>
+  <label>Tipo de conta</label>
   <select id="tipo">
     <option value="cliente">Cliente</option>
     <option value="marido">Profissional</option>
@@ -30,14 +105,13 @@
 
 <script>
 async function cad(){
-  const nomeValue = document.getElementById("nome").value.trim();
-  const emailValue = document.getElementById("email").value.trim();
-  const senhaValue = document.getElementById("senha").value;
-  const tipoValue = document.getElementById("tipo").value;
+  const nomeValue = nome.value.trim();
+  const emailValue = email.value.trim();
+  const senhaValue = senha.value;
+  const tipoValue = tipo.value;
 
   const msg = document.getElementById("msg");
 
-  // 🔎 VALIDAÇÃO
   if(!nomeValue || !emailValue || !senhaValue){
     msg.innerText = "⚠️ Preencha todos os campos";
     msg.style.color = "red";
@@ -45,7 +119,7 @@ async function cad(){
   }
 
   if(senhaValue.length < 4){
-    msg.innerText = "⚠️ A senha deve ter pelo menos 4 caracteres";
+    msg.innerText = "⚠️ Senha muito curta";
     msg.style.color = "red";
     return;
   }
@@ -64,23 +138,21 @@ async function cad(){
 
     const data = await r.json();
 
-    // 🔥 TRATAMENTO REAL DO ERRO
     if(!r.ok){
       msg.innerText = "❌ " + (data.erro || "Erro ao cadastrar");
       msg.style.color = "red";
       return;
     }
 
-    // ✅ SUCESSO
-    msg.innerText = "✅ Conta criada com sucesso!";
+    msg.innerText = "✅ Conta criada!";
     msg.style.color = "#FFD600";
 
     setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1500);
+      location.href = "login.html";
+    }, 1200);
 
-  } catch (e) {
-    msg.innerText = "❌ Servidor offline ou erro de conexão";
+  } catch {
+    msg.innerText = "❌ Servidor offline";
     msg.style.color = "red";
   }
 }
