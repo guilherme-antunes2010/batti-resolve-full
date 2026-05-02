@@ -131,7 +131,9 @@ button {
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-const socket = io("https://batti-backend.onrender.com");
+const socket = io("https://SEU-BACKEND.onrender.com", {
+  transports: ["websocket"]
+});
 
 let userLat, userLng;
 let rotaLayer, profissionalMarker;
