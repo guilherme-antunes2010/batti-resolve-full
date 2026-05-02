@@ -131,7 +131,7 @@ button {
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-const socket = io("http://localhost:3000");
+const socket = io("https://batti-backend.onrender.com");
 
 let userLat, userLng;
 let rotaLayer, profissionalMarker;
@@ -202,7 +202,7 @@ async function criar(){
 
   console.log("ENVIANDO:", payload);
 
-  const res = await fetch("http://localhost:3000/chamados", {
+  const res = await fetch("https://batti-backend.onrender.com/chamados", {
     method:"POST",
     headers:{
       "Content-Type":"application/json",

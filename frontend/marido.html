@@ -95,7 +95,7 @@ body {
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
 <script>
-const socket = io("http://localhost:3000");
+const socket = io("https://batti-backend.onrender.com");
 
 const map = L.map('map').setView([-23.55, -46.63], 13);
 
@@ -139,7 +139,7 @@ async function pegarEndereco(lat, lng){
 
 // 🔥 CARREGAR CHAMADOS
 async function carregarChamados(){
-  const res = await fetch("http://localhost:3000/chamados");
+  const res = await fetch("https://batti-backend.onrender.com/chamados");
   const chamados = await res.json();
 
   lista.innerHTML = "";
@@ -181,7 +181,7 @@ async function carregarChamados(){
 async function aceitar(id){
   const user = JSON.parse(localStorage.getItem("user"));
 
-  await fetch(`http://localhost:3000/chamados/${id}/aceitar`, {
+  await fetch(`https://batti-backend.onrender.com/chamados/${id}/aceitar`, {
     method:"PUT",
     headers:{
       "Authorization": user.token
