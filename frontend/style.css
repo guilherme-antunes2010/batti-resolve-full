@@ -1,0 +1,256 @@
+/* =========================
+   RESET
+========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================
+   BODY
+========================= */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #121212;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* =========================
+   CONTAINER (TELAS LOGIN/CADASTRO)
+========================= */
+.container {
+  width: 100%;
+  max-width: 420px;
+  margin: 60px auto;
+  background: #1e1e1e;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+/* =========================
+   TITULOS
+========================= */
+h1, h2 {
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* =========================
+   LABEL
+========================= */
+label {
+  display: block;
+  text-align: left;
+  font-size: 13px;
+  opacity: 0.8;
+  margin-top: 12px;
+}
+
+/* =========================
+   INPUTS
+========================= */
+input, select {
+  width: 100%;
+  padding: 14px;
+  margin-top: 6px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 15px;
+  transition: 0.2s;
+}
+
+input:focus, select:focus {
+  border: 2px solid #FFD600;
+  background: #2f2f2f;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: 12px;
+  border: none;
+  background: #FFD600;
+  color: #000;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+button:hover {
+  background: #ffea00;
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* =========================
+   LINKS
+========================= */
+a {
+  display: block;
+  margin-top: 10px;
+  color: #FFD600;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   MAPA (FULLSCREEN)
+========================= */
+#map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* =========================
+   HEADER (TOPO)
+========================= */
+.top-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(10px);
+  text-align: center;
+  font-weight: bold;
+  z-index: 3;
+}
+
+/* =========================
+   PAINEL INFERIOR (APP STYLE)
+========================= */
+.bottom-panel {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-height: 60%;
+  overflow-y: auto;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  z-index: 2;
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.7);
+}
+
+/* BARRA DE ARRASTE */
+.bottom-panel::before {
+  content: "";
+  display: block;
+  width: 40px;
+  height: 5px;
+  background: #444;
+  border-radius: 10px;
+  margin: 0 auto 10px;
+}
+
+/* =========================
+   VALOR
+========================= */
+#valor {
+  font-size: 17px;
+  font-weight: bold;
+  margin: 12px 0;
+  color: #FFD600;
+  text-align: center;
+}
+
+/* =========================
+   CARD (LISTAS)
+========================= */
+.card {
+  background: #2a2a2a;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+/* =========================
+   STATUS
+========================= */
+.status {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* =========================
+   RESPONSIVO - MOBILE
+========================= */
+@media (max-width: 480px) {
+
+  .container {
+    margin: 20px 10px;
+    padding: 18px;
+  }
+
+  h1, h2 {
+    font-size: 20px;
+  }
+
+  input, select {
+    font-size: 16px; /* evita zoom no iPhone */
+    padding: 16px;
+  }
+
+  button {
+    padding: 16px;
+    font-size: 16px;
+  }
+
+  .bottom-panel {
+    max-height: 70%;
+    padding: 16px;
+  }
+}
+
+/* =========================
+   TELAS BAIXAS
+========================= */
+@media (max-height: 600px) {
+  .bottom-panel {
+    max-height: 75%;
+  }
+}
+
+/* =========================
+   SCROLL MOBILE SUAVE
+========================= */
+.bottom-panel {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* =========================
+   ANIMAÇÃO
+========================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

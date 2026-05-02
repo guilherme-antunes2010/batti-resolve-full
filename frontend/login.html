@@ -1,0 +1,66 @@
+<link rel="stylesheet" href="style.css">
+
+<style>
+  .erro {
+    color: red;
+    margin-top: 10px;
+  }
+</style>
+
+<div class="container">
+  <h2>Entrar</h2>
+
+  <label for="email">Email</label>
+  <input id="email" type="email" placeholder="Digite seu email">
+
+  <label for="senha">Senha</label>
+  <input id="senha" type="password" placeholder="Digite sua senha">
+
+  <button onclick="login()">Entrar</button>
+
+  <p id="erro" class="erro"></p>
+</div>
+
+<script>
+async function login(){
+  const emailValue = document.getElementById("email").value;
+  const senhaValue = document.getElementById("senha").value;
+  const erro = document.getElementById("erro");
+
+  // validação básica
+  if(!emailValue || !senhaValue){
+    erro.innerText = "Preencha todos os campos";
+    return;
+  }
+
+  try {
+    const r = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        email: emailValue,
+        senha: senhaValue
+      })
+    });
+
+    if(!r.ok){
+      erro.innerText = "Email ou senha inválidos";
+      return;
+    }
+
+    const d = await r.json();
+
+    localStorage.setItem("user", JSON.stringify(d));
+
+    // redirecionamento
+    if(d.tipo === "cliente"){
+      window.location.href = "cliente.html";
+    } else {
+      window.location.href = "marido.html";
+    }
+
+  } catch (e) {
+    erro.innerText = "Erro ao conectar com o servidor";
+  }
+}
+</script>

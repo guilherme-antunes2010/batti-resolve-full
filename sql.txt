@@ -1,0 +1,17 @@
+CREATE TABLE users (
+ id SERIAL PRIMARY KEY,
+ nome TEXT,
+ email TEXT UNIQUE,
+ senha TEXT,
+ tipo TEXT
+);
+
+CREATE TABLE chamados (
+ id SERIAL PRIMARY KEY,
+ cliente_id INTEGER,
+ descricao TEXT,
+ lat DOUBLE PRECISION,
+ lng DOUBLE PRECISION,
+ status TEXT DEFAULT 'aberto',
+ profissional_id INTEGER
+);

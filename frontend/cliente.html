@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<title>Batti Resolve - Cliente</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #121212;
+  color: #fff;
+}
+
+/* MAPA */
+#map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* TOPO */
+.top-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 2;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* PAINEL */
+.bottom-panel {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  z-index: 2;
+}
+
+/* INPUT */
+input, select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #2a2a2a;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+/* BOTÃO */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #FFD600;
+  font-weight: bold;
+}
+
+/* VALOR */
+#valor {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #FFD600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">🚀 Batti Resolve</div>
+
+<div id="map"></div>
+
+<div class="bottom-panel">
+
+  <label>📝 Descrição do problema</label>
+  <input id="desc" placeholder="Ex: lâmpada queimada, torneira vazando...">
+
+  <label>🔧 Tipo de serviço</label>
+  <select id="servico">
+    <option value="50">Troca de lâmpada — R$50</option>
+    <option value="120">Instalação de chuveiro — R$120</option>
+    <option value="80">Tomada/interruptor — R$80</option>
+    <option value="100">Conserto torneira — R$100</option>
+    <option value="120">Desentupimento — R$120</option>
+    <option value="180">Ventilador teto — R$180</option>
+    <option value="120">Montagem móvel — R$120</option>
+    <option value="150">Instalação TV — R$150</option>
+    <option value="100">Prateleira — R$100</option>
+    <option value="70">Quadros/espelhos — R$70</option>
+  </select>
+
+  <label>⚡ Nível de prioridade</label>
+  <select id="prioridade">
+    <option value="0.1">Baixo (+10%)</option>
+    <option value="0.2">Médio (+20%)</option>
+    <option value="0.3">Alto (+30%)</option>
+    <option value="0.4">Urgente (+40%)</option>
+  </select>
+
+  <label>💳 Forma de pagamento</label>
+  <select id="pagamento">
+    <option>Pix</option>
+    <option>Débito</option>
+    <option>Crédito</option>
+    <option>Dinheiro</option>
+  </select>
+
+  <div id="valor">Valor: R$ 0</div>
+
+  <button onclick="criar()">Chamar profissional</button>
+
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+const socket = io("http://localhost:3000");
+
+let userLat, userLng;
+let rotaLayer, profissionalMarker;
+let chamadoAtual = null;
+
+// ELEMENTOS (🔥 ESSENCIAL)
+const desc = document.getElementById("desc");
+const servico = document.getElementById("servico");
+const prioridadeSelect = document.getElementById("prioridade");
+const pagamento = document.getElementById("pagamento");
+const valor = document.getElementById("valor");
+
+// MAPA
+const map = L.map('map').setView([-23.55, -46.63], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+  .addTo(map);
+
+// 📍 LOCALIZAÇÃO
+navigator.geolocation.getCurrentPosition(pos => {
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
+
+  map.setView([userLat, userLng], 15);
+
+  L.marker([userLat, userLng]).addTo(map)
+    .bindPopup("Você está aqui")
+    .openPopup();
+});
+
+// 💰 CALCULAR VALOR
+function calcular(){
+  const base = parseFloat(servico.value);
+  const prioridade = parseFloat(prioridadeSelect.value);
+
+  const transporte = base * 0.2;
+  const total = (base + transporte) * (1 + prioridade);
+
+  valor.innerText = "Valor: R$ " + total.toFixed(2);
+  return total;
+}
+
+servico.onchange = calcular;
+prioridadeSelect.onchange = calcular;
+
+calcular();
+
+// 🚀 CRIAR CHAMADO
+async function criar(){
+
+  if(!desc.value){
+    alert("Descreva o problema");
+    return;
+  }
+
+  const total = calcular();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const payload = {
+    descricao: desc.value,
+    lat: userLat,
+    lng: userLng,
+    tipo_servico: servico.options[servico.selectedIndex].text,
+    prioridade: prioridadeSelect.options[prioridadeSelect.selectedIndex].text,
+    pagamento: pagamento.value,
+    valor: total
+  };
+
+  console.log("ENVIANDO:", payload);
+
+  const res = await fetch("http://localhost:3000/chamados", {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization": user.token
+    },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  chamadoAtual = data.id;
+
+  document.querySelector(".bottom-panel").innerHTML = `
+    <h3>⏳ Procurando profissional...</h3>
+    <p>Aguarde alguém aceitar seu chamado</p>
+  `;
+}
+
+// 🔔 QUANDO PROFISSIONAL ACEITA
+socket.on("chamadoAceito", (data)=>{
+  if(data.id == chamadoAtual){
+    alert("✅ Profissional aceitou!");
+  }
+});
+
+// 📡 LOCALIZAÇÃO DO PROFISSIONAL
+socket.on("atualizacao", (data)=>{
+  const {lat,lng} = data;
+
+  if(profissionalMarker){
+    profissionalMarker.setLatLng([lat,lng]);
+  } else {
+    profissionalMarker = L.marker([lat,lng]).addTo(map)
+      .bindPopup("Profissional a caminho 🚗");
+  }
+});
+</script>
+
+</body>
+</html>

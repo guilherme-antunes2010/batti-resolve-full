@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Batti Resolve</title>
+<link rel="stylesheet" href="style.css">
+
+<style>
+/* FUNDO COM GRADIENTE */
+body {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #121212, #1e1e1e);
+}
+
+/* CONTAINER */
+.container {
+  text-align: center;
+  padding: 30px;
+  background: rgba(30,30,30,0.9);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+  width: 90%;
+  max-width: 350px;
+}
+
+/* LOGO */
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.logo span {
+  color: #FFD600;
+}
+
+/* SUBTITULO */
+.subtitle {
+  font-size: 14px;
+  opacity: 0.7;
+  margin-bottom: 25px;
+}
+
+/* BOTÕES */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+/* BOTÃO PRINCIPAL */
+.btn-primary {
+  background: #FFD600;
+  color: #000;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+/* BOTÃO SECUNDÁRIO */
+.btn-secondary {
+  border: 1px solid #FFD600;
+  color: #FFD600;
+}
+
+.btn-secondary:hover {
+  background: #FFD600;
+  color: #000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="logo">
+    Batti <span>Resolve</span>
+  </div>
+
+  <p class="subtitle">
+    Encontre profissionais para resolver qualquer problema da sua casa
+  </p>
+
+  <a href="login.html" class="btn btn-primary">
+    Entrar
+  </a>
+
+  <a href="cadastro.html" class="btn btn-secondary">
+    Criar conta
+  </a>
+</div>
+
+</body>
+</html>

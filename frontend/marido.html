@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<title>Profissional - Batti Resolve</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #121212;
+  color: #fff;
+}
+
+/* MAPA */
+#map {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* TOPO */
+.top-bar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 2;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* PAINEL */
+.bottom-panel {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  max-height: 45%;
+  overflow-y: auto;
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 20px 20px 0 0;
+  z-index: 2;
+}
+
+/* CARD */
+.card {
+  background: #2a2a2a;
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* TEXTO */
+.small {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* BOTÃO */
+.btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: #FFD600;
+  font-weight: bold;
+  margin-top: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top-bar">
+  🧑‍🔧 Profissional Online
+</div>
+
+<div id="map"></div>
+
+<div class="bottom-panel">
+  <p>Chamados disponíveis</p>
+  <div id="lista"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+<script>
+const socket = io("http://localhost:3000");
+
+const map = L.map('map').setView([-23.55, -46.63], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
+  .addTo(map);
+
+let marker;
+
+// 📍 LOCALIZAÇÃO EM TEMPO REAL
+navigator.geolocation.watchPosition(pos => {
+  const lat = pos.coords.latitude;
+  const lng = pos.coords.longitude;
+
+  socket.emit("localizacao", { lat, lng });
+
+  map.setView([lat, lng], 15);
+
+  if (marker) {
+    marker.setLatLng([lat, lng]);
+  } else {
+    marker = L.marker([lat, lng]).addTo(map)
+      .bindPopup("Você (profissional)")
+      .openPopup();
+  }
+});
+
+
+// 🔥 PEGAR ENDEREÇO
+async function pegarEndereco(lat, lng){
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    );
+    const data = await res.json();
+    return data.display_name || "Endereço não encontrado";
+  } catch {
+    return "Endereço indisponível";
+  }
+}
+
+
+// 🔥 CARREGAR CHAMADOS
+async function carregarChamados(){
+  const res = await fetch("http://localhost:3000/chamados");
+  const chamados = await res.json();
+
+  lista.innerHTML = "";
+
+  for (const c of chamados) {
+    if (c.status === "aberto") {
+
+      const endereco = await pegarEndereco(c.lat, c.lng);
+
+      const valorFinal = parseFloat(c.valor || 0);
+      const valorProfissional = valorFinal * 0.93;
+
+      lista.innerHTML += `
+        <div class="card">
+          <p><b>${c.descricao}</b></p>
+
+          <p class="small">🧰 ${c.tipo_servico || "Serviço não informado"}</p>
+          <p class="small">💳 ${c.pagamento || "Pagamento não informado"}</p>
+
+          <p>💰 Cliente paga: <b>R$ ${valorFinal.toFixed(2)}</b></p>
+
+          <p style="color:#FFD600">
+            🧑‍🔧 Você recebe: <b>R$ ${valorProfissional.toFixed(2)}</b>
+          </p>
+
+          <p class="small">📍 ${endereco}</p>
+
+          <button class="btn" onclick="aceitar(${c.id})">
+            Aceitar serviço
+          </button>
+        </div>
+      `;
+    }
+  }
+}
+
+
+// 🔥 ACEITAR CHAMADO
+async function aceitar(id){
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  await fetch(`http://localhost:3000/chamados/${id}/aceitar`, {
+    method:"PUT",
+    headers:{
+      "Authorization": user.token
+    }
+  });
+
+  alert("Serviço aceito!");
+  carregarChamados();
+}
+
+
+// 🔄 ATUALIZAÇÃO AUTOMÁTICA
+setInterval(carregarChamados, 5000);
+
+// carregar ao abrir
+carregarChamados();
+
+</script>
+
+</body>
+</html>
